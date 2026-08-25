@@ -7,6 +7,7 @@ main.py) once the migration is done; it is not meant to stay in the app.
 
 from bson import json_util
 from fastapi import APIRouter, Header, HTTPException, Request, status
+from pymongo.errors import BulkWriteError
 
 from app.database import get_db
 
@@ -32,4 +33,13 @@ async def import_batch(request: Request, x_migrate_secret: str = Header(default=
     if reset:
         coll.delete_many({})
     if documents:
-        coll.insert_many(documents)
+        try:
+            # unordered so one duplicate (e.g. a retried batch that partially
+            # landed before a dropped connection) doesn't block the rest —
+            # duplicate _id errors are expected/harmless on retry, anything
+            # else should still fail loudly.
+            coll.insert_many(documents, ordered=False)
+        except BulkWriteError as exc:
+            non_duplicate_errors = [e for e in exc.details.get("writeErrors", []) if e.get("code") != 11000]
+            if non_duplicate_errors:
+                raise
