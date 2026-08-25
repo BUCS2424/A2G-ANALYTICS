@@ -18,13 +18,21 @@ settings = get_settings()
 # even buffered. Needed for the same "diagnosable from the log viewer"
 # requirement the boot-log line satisfies for startup.
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+logger = logging.getLogger("app.main")
 
 app = FastAPI(title=settings.app_name, debug=settings.debug)
 
 
 @app.on_event("startup")
 def _startup() -> None:
-    ensure_indexes()
+    try:
+        ensure_indexes()
+    except Exception:
+        # Index creation is a write op — if the DB is unreachable or (as with
+        # an over-quota Atlas free tier) rejecting all writes, this must not
+        # take the whole app down with it. The app can still serve reads/existing
+        # data; missing indexes just means slower queries until this is fixed.
+        logger.exception("[BOOT] ensure_indexes() failed — continuing without it")
     # NOTE: if this ever runs under `uvicorn --workers N>1`, each worker
     # process starts its own scheduler and the monthly job fires N times —
     # fine for the current single-worker Docker setup, but worth revisiting
