@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.database import ensure_indexes
-from app.routers import admin, auth, event, stats, websites
+from app.routers import admin, auth, event, migrate, stats, websites
 from app.scheduler import start_scheduler, stop_scheduler
 
 settings = get_settings()
@@ -53,6 +53,7 @@ app.include_router(websites.router)
 app.include_router(stats.router)
 app.include_router(admin.router)
 app.include_router(event.router)
+app.include_router(migrate.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
