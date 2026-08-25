@@ -1,0 +1,171 @@
+<!--
+Email-safe HTML: table-based layout, inline styles only, no flexbox/grid, no
+external CSS/JS/fonts. Max-width 600px is the standard email convention so it
+renders sanely in a preview pane as well as full-width.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ domain }} — Monthly Report</title>
+</head>
+<body style="margin:0; padding:0; background-color:#f5f6fa; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f6fa; padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background-color:#ffffff; border-radius:14px; overflow:hidden; border:1px solid #e2e4eb;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#4f46e5; padding:28px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="color:#ffffff; font-size:14px; font-weight:700; letter-spacing:0.02em;">A2G ANALYTICS</td>
+                  <td align="right" style="color:#c7d2fe; font-size:13px;">{{ month_label }}</td>
+                </tr>
+              </table>
+              <div style="color:#ffffff; font-size:22px; font-weight:700; margin-top:10px;">{{ domain }}</div>
+              <div style="color:#c7d2fe; font-size:13px; margin-top:2px;">Monthly traffic report — {{ range_label }}</div>
+            </td>
+          </tr>
+
+          <!-- KPI row -->
+          <tr>
+            <td style="padding:28px 32px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="50%" style="padding-right:8px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f6fa; border-radius:10px;">
+                      <tr>
+                        <td style="padding:16px 18px;">
+                          <div style="color:#6b7280; font-size:11px; text-transform:uppercase; letter-spacing:0.04em;">Visitors</div>
+                          <div style="color:#1a1d29; font-size:28px; font-weight:700; margin-top:4px;">{{ total_visitors_fmt }}</div>
+                          <div style="font-size:12px; margin-top:4px; color:{{ visitors_change_color }};">{{ visitors_change }} vs last month</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td width="50%" style="padding-left:8px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f6fa; border-radius:10px;">
+                      <tr>
+                        <td style="padding:16px 18px;">
+                          <div style="color:#6b7280; font-size:11px; text-transform:uppercase; letter-spacing:0.04em;">Pageviews</div>
+                          <div style="color:#1a1d29; font-size:28px; font-weight:700; margin-top:4px;">{{ total_pageviews_fmt }}</div>
+                          <div style="font-size:12px; margin-top:4px; color:{{ pageviews_change_color }};">{{ pageviews_change }} vs last month</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Top pages -->
+          <tr>
+            <td style="padding:16px 32px 8px;">
+              <div style="color:#1a1d29; font-size:14px; font-weight:600; margin-bottom:10px;">Top pages</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for row in top_pages %}
+                <tr>
+                  <td style="padding:6px 0; border-bottom:1px solid #f0f1f5; font-size:13px; color:#1a1d29;">{{ row.value or 'Direct / None' }}</td>
+                  <td align="right" style="padding:6px 0; border-bottom:1px solid #f0f1f5; font-size:13px; color:#6b7280; white-space:nowrap;">{{ row.count_fmt }}</td>
+                </tr>
+                {% else %}
+                <tr><td style="padding:6px 0; font-size:13px; color:#9ca3af;">No data for this period</td></tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Top referrers -->
+          <tr>
+            <td style="padding:16px 32px 8px;">
+              <div style="color:#1a1d29; font-size:14px; font-weight:600; margin-bottom:10px;">Top referrers</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for row in top_referrers %}
+                <tr>
+                  <td style="padding:6px 0; border-bottom:1px solid #f0f1f5; font-size:13px; color:#1a1d29;">{{ row.value or 'Direct / None' }}</td>
+                  <td align="right" style="padding:6px 0; border-bottom:1px solid #f0f1f5; font-size:13px; color:#6b7280; white-space:nowrap;">{{ row.count_fmt }}</td>
+                </tr>
+                {% else %}
+                <tr><td style="padding:6px 0; font-size:13px; color:#9ca3af;">No data for this period</td></tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Top countries -->
+          <tr>
+            <td style="padding:16px 32px 8px;">
+              <div style="color:#1a1d29; font-size:14px; font-weight:600; margin-bottom:10px;">Top countries</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for row in top_countries %}
+                <tr>
+                  <td style="padding:6px 0; border-bottom:1px solid #f0f1f5; font-size:13px; color:#1a1d29;">{{ row.flag }} {{ row.name }}</td>
+                  <td align="right" style="padding:6px 0; border-bottom:1px solid #f0f1f5; font-size:13px; color:#6b7280; white-space:nowrap;">{{ row.count_fmt }}</td>
+                </tr>
+                {% else %}
+                <tr><td style="padding:6px 0; font-size:13px; color:#9ca3af;">No data for this period</td></tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Devices -->
+          <tr>
+            <td style="padding:16px 32px 24px;">
+              <div style="color:#1a1d29; font-size:14px; font-weight:600; margin-bottom:10px;">Devices</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for row in devices %}
+                <tr>
+                  <td style="padding:6px 0; font-size:13px; color:#1a1d29; width:80px;">{{ row.value or 'Unknown' }}</td>
+                  <td style="padding:6px 8px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#e2e4eb; border-radius:3px;">
+                      <tr>
+                        <td width="{{ row.pct }}%" style="background-color:#4f46e5; border-radius:3px; height:6px; line-height:6px; font-size:1px;">&nbsp;</td>
+                        <td style="font-size:1px; line-height:6px;">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="right" style="padding:6px 0; font-size:13px; color:#6b7280; width:44px; white-space:nowrap;">{{ row.pct }}%</td>
+                </tr>
+                {% else %}
+                <tr><td style="padding:6px 0; font-size:13px; color:#9ca3af;">No data for this period</td></tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          {% if public_link %}
+          <tr>
+            <td style="padding:0 32px 32px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#4f46e5; border-radius:8px;">
+                    <a href="{{ public_link }}" style="display:inline-block; padding:12px 22px; color:#ffffff; font-size:14px; font-weight:600; text-decoration:none;">View full analytics →</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px; border-top:1px solid #f0f1f5; background-color:#fafafa;">
+              <div style="color:#9ca3af; font-size:11px; line-height:1.6;">
+                You're receiving this because monthly email reports are enabled for <strong>{{ domain }}</strong>.
+                Sent by A2G Analytics.
+              </div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
