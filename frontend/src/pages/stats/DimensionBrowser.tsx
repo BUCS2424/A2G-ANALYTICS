@@ -7,7 +7,7 @@ import { isPasswordRequired } from './context'
 
 function rowIcon(dimension: string, value: string | null) {
   if (!value) return null
-  if (dimension === 'countries') {
+  if (dimension === 'countries' || dimension === 'cities') {
     const flag = flagEmoji(value)
     return flag ? <span className="row-icon">{flag}</span> : null
   }

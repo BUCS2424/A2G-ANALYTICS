@@ -12,7 +12,7 @@ export interface RowMenuAction {
 
 export default function RowMenu({ actions }: { actions: RowMenuAction[] }) {
   const [open, setOpen] = useState(false)
-  const [position, setPosition] = useState({ top: 0, right: 0 })
+  const [position, setPosition] = useState<{ right: number; top?: number; bottom?: number }>({ right: 0 })
   const triggerRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -29,7 +29,13 @@ export default function RowMenu({ actions }: { actions: RowMenuAction[] }) {
   function toggle() {
     if (!open && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect()
-      setPosition({ top: rect.bottom + 4, right: window.innerWidth - rect.right })
+      const estimatedHeight = actions.length * 38 + 12
+      const right = window.innerWidth - rect.right
+      if (rect.bottom + estimatedHeight > window.innerHeight && rect.top > estimatedHeight) {
+        setPosition({ right, bottom: window.innerHeight - rect.top + 4 })
+      } else {
+        setPosition({ right, top: rect.bottom + 4 })
+      }
     }
     setOpen((o) => !o)
   }
@@ -41,7 +47,7 @@ export default function RowMenu({ actions }: { actions: RowMenuAction[] }) {
       </button>
       {open &&
         createPortal(
-          <div ref={dropdownRef} className="row-menu-dropdown" style={{ position: 'fixed', top: position.top, right: position.right }}>
+          <div ref={dropdownRef} className="row-menu-dropdown" style={{ position: 'fixed', top: position.top, bottom: position.bottom, right: position.right }}>
             {actions.map((action, i) => (
               <button
                 key={action.label}
