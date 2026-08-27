@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
@@ -55,6 +55,37 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# The public tracking beacon is embedded on arbitrary third-party domains —
+# unlike the dashboard API above, it must accept requests from ANY origin
+# (matching the original Laravel app's `allowed_origins => ['*']` for api/*).
+# Registered after CORSMiddleware so it wraps outside it and handles these
+# paths itself before the origin-restricted middleware ever sees them.
+TRACKING_PATHS = ("/api/event",)
+
+
+@app.middleware("http")
+async def tracking_beacon_cors(request: Request, call_next):
+    if not request.url.path.startswith(TRACKING_PATHS):
+        return await call_next(request)
+
+    origin = request.headers.get("origin", "*")
+    if request.method == "OPTIONS":
+        return Response(
+            status_code=204,
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "content-type",
+                "Access-Control-Max-Age": "600",
+            },
+        )
+
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = origin
+    return response
+
 
 app.include_router(auth.router)
 app.include_router(websites.router)
