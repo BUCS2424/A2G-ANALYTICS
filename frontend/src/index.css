@@ -1339,10 +1339,28 @@ button.secondary {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+  margin-right: 0.5rem;
+}
+
+.breakdown-row-text {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-right: 0.5rem;
+}
+
+a.breakdown-row-text {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.breakdown-row-text:hover {
+  color: var(--primary);
+  text-decoration: underline;
 }
 
 .row-icon {
@@ -1429,6 +1447,15 @@ button.secondary {
   overflow: hidden;
 }
 
+.dimension-table {
+  table-layout: fixed;
+}
+
+.dimension-table th:first-child,
+.dimension-table td:first-child {
+  width: 70%;
+}
+
 .dimension-table th,
 .dimension-table td,
 .recent-table td {
@@ -1462,6 +1489,7 @@ button.secondary {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .dimension-row-bar {

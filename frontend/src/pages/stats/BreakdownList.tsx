@@ -20,10 +20,11 @@ interface Props {
   title: string
   rows: BreakdownRow[]
   kind?: 'countries' | 'referrers' | 'pages' | 'plain'
+  domain?: string
   onViewAll?: () => void
 }
 
-export default function BreakdownList({ title, rows, kind = 'plain', onViewAll }: Props) {
+export default function BreakdownList({ title, rows, kind = 'plain', domain, onViewAll }: Props) {
   const max = Math.max(1, ...rows.map((r) => r.count))
 
   return (
@@ -36,7 +37,21 @@ export default function BreakdownList({ title, rows, kind = 'plain', onViewAll }
             <div className="breakdown-row-top">
               <span className="breakdown-row-label">
                 {rowIcon(kind, row.value)}
-                {row.value ?? 'Direct / None'}
+                {kind === 'pages' && row.value && domain ? (
+                  <a
+                    className="breakdown-row-text"
+                    href={`https://${domain}${row.value}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={row.value}
+                  >
+                    {row.value}
+                  </a>
+                ) : (
+                  <span className="breakdown-row-text" title={row.value ?? undefined}>
+                    {row.value ?? 'Direct / None'}
+                  </span>
+                )}
               </span>
               <span className="breakdown-count">{row.count.toLocaleString()}</span>
             </div>

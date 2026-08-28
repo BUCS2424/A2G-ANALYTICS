@@ -119,7 +119,7 @@ export default function Overview() {
         </div>
 
         <div className="side-panels">
-          <BreakdownList title="Top pages" rows={data.pages} kind="pages" onViewAll={() => setOpenDimension('pages')} />
+          <BreakdownList title="Top pages" rows={data.pages} kind="pages" domain={domain} onViewAll={() => setOpenDimension('pages')} />
           <div className="breakdown-card">
             <h3>Device acquisition</h3>
             {data.devices.length === 0 && <p className="muted">No data for this range</p>}

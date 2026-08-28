@@ -94,11 +94,26 @@ export default function DimensionBrowser({ domain, dimension, from, to, onLocked
           </tr>
           {data.results.map((row) => {
             const pct = data.total_count > 0 ? (row.count / data.total_count) * 100 : 0
+            const isPage = (dimension === 'pages' || dimension === 'landing-pages') && row.value
             return (
               <tr key={row.value ?? 'direct'} className="dimension-row">
                 <td className="dimension-row-label">
                   {rowIcon(dimension, row.value)}
-                  {row.value ?? 'Direct / None'}
+                  {isPage ? (
+                    <a
+                      className="breakdown-row-text"
+                      href={`https://${domain}${row.value}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={row.value ?? undefined}
+                    >
+                      {row.value}
+                    </a>
+                  ) : (
+                    <span className="breakdown-row-text" title={row.value ?? undefined}>
+                      {row.value ?? 'Direct / None'}
+                    </span>
+                  )}
                 </td>
                 <td>
                   {row.count.toLocaleString()} <span className="muted">{pct.toFixed(1)}%</span>
